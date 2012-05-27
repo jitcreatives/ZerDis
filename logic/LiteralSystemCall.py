@@ -1,6 +1,6 @@
 
 import subprocess
-from String import Template
+from string import Template
 
 from KnfLiteral import KnfLiteral
 
