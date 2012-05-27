@@ -7,7 +7,7 @@ class LiteralMatches( KnfLiteral ):
         key = ""
 
         def __init__( self, negated, key, pattern ):
-                super( KnfLiteral, self ).__init__( negated )
+                KnfLiteral.__init__( self, negated )
                 self.key = key
                 self.regex = re.compile( pattern )
 
