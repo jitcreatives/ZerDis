@@ -1,6 +1,6 @@
 
-import KnfRule
-import ClientContext
+from KnfRule import KnfRule
+from ClientContext import ClientContext
 
 class KnfAuthorize( object ):
         rules = []

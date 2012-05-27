@@ -1,5 +1,5 @@
 
-import KnfLiteral
+from KnfLiteral import KnfLiteral
 
 class KnfRule( object ):
         literals = []
