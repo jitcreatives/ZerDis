@@ -10,3 +10,6 @@ class ClientContext( object ):
 
         def add_token( self, token ):
                 self.context_map[ 'token' ] = token
+
+        def add_path( self, path ):
+                self.context_map[ 'path' ] = path
