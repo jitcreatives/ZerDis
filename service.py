@@ -23,11 +23,11 @@ class CertDistribution(object):
 
 
     def __init__(self):
-    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '(.*\.jit-creatives.de)|(.*\.jitmail.de)')
+    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '(.*\.jit-creatives.de)|(.*\.jitmail.de)|(.*\.djangoserver.de')
     	lit_2 = LiteralDNSCheck(negated = False)
-        lit_3 = LiteralSystemCall(negated = False, pattern = "ssh root@$ip exit 0")
+        #lit_3 = LiteralSystemCall(negated = False, pattern = "ssh root@$ip exit 0")
     	rule = KnfRule()
-        rule.add_literal(lit_3)
+        #rule.add_literal(lit_3)
         rule.add_literal(lit_1)
     	rule.add_literal(lit_2)
 
