@@ -2,7 +2,7 @@
 import KnfRule
 import ClientContext
 
-class KnfAutorize( object ):
+class KnfAuthorize( object ):
         rules = []
 
         def add_rule( self, rule ):
