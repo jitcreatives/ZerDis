@@ -13,9 +13,9 @@ from logic.LiteralDNSCheck import LiteralDNSCheck
 from logic.LiteralSystemCall import LiteralSystemCall
 
 HTTPS = False
-SERVER = "https://192.168.12.112"
-PORT = ":8443"
-PATH = ""
+SERVER = "https://mgmt01.jit-creatives.de"
+PORT = ":4661"
+PATH = "/var/ssl"
 
 class CertDistribution(object):
     
@@ -23,13 +23,13 @@ class CertDistribution(object):
 
 
     def __init__(self):
-    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '[tommylap]+')
+    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '(.*\.jit-creatives.de)|(.*\.jitmail.de)')
     	lit_2 = LiteralDNSCheck(negated = False)
-        lit_3 = LiteralSystemCall(negated = False, pattern = "ssh explicit@$ip exit 0")
+        lit_3 = LiteralSystemCall(negated = False, pattern = "ssh root@$ip exit 0")
     	rule = KnfRule()
         rule.add_literal(lit_3)
-        #rule.add_literal(lit_1)
-    	#rule.add_literal(lit_2)
+        rule.add_literal(lit_1)
+    	rule.add_literal(lit_2)
 
     	self.knf.add_rule(rule)
 
@@ -52,7 +52,7 @@ class CertDistribution(object):
         if url == '/':
         	prefix_dict = find_prefixes()
         	return str(prefix_dict.keys())
-        elif not os.path.exists(url[1:]): 
+        elif not os.path.exists(PATH + url): 
         	prefix_dict = find_prefixes()
         	try:
         		buckets = prefix_dict[url[1:]]
@@ -72,7 +72,7 @@ class CertDistribution(object):
 
     		authorized = self.knf.authorize(cc)
     		if authorized:
-    			return serve_file(os.getcwd() + url, "application/x-download", "attachment")
+    			return serve_file(PATH + url, "application/x-download", "attachment")
     		else:
     			cherrypy.response.status = 401
     			return "UNAUTHORIZED"
@@ -80,13 +80,13 @@ class CertDistribution(object):
 
 if __name__ == '__main__':
 	server_config = {
-        'server.socket_host': '192.168.12.112',
-        'server.socket_port':8443,
+        'server.socket_host': 'mgmt01.jit-creatives.de',
+        'server.socket_port':4661,
 
         'server.ssl_module':'pyopenssl',
-        'server.ssl_certificate':'etc/host.crt',
-        'server.ssl_private_key':'etc/host.key',
-        'server.ssl_certificate_chain':'etc/ca.crt'
-    }
+        'server.ssl_certificate':'/var/ssl/mgmt01.jit-creatives.de/req.pem.crt',
+        'server.ssl_private_key':'/var/ssl/mgmt01.jit-creatives.de/req.pem.key',
+        'server.ssl_certificate_chain':'/var/ssl/startssl_caincrt'
+    	}
 	cherrypy.config.update(server_config)
 	cherrypy.quickstart(CertDistribution())

@@ -62,10 +62,16 @@ def find_buckets(words, similarity_func = get_similarity_percentage, threshold =
 
 	return prefix_dict
 
-def find_prefixes(path = "certs/"):
-	find_list = subprocess.check_output(["find", path, "-type", "f"]).split('\n')
-	word_list = [w for w in find_list if w]
+def want_file( w ):
+	if not w:
+		return False
+	if w.find(".git") > 0:
+		return False
+	return True
+
+def find_prefixes(path = "/var/ssl"):
+	find_list = subprocess.Popen(['find', path ,"-type","f"], stdout=subprocess.PIPE).communicate()[0].split('\n')
+	#find_list = subprocess.check_output(["find", path, "-type", "f"]).split('\n')
+	word_list = [ w.replace("/var/ssl/","") for w in find_list if want_file( w )]
 	return find_buckets(word_list)
 
-if __name__ == "__main__":
-	find_prefixes()
