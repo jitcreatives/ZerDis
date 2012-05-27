@@ -62,10 +62,10 @@ def find_buckets(words, similarity_func = get_similarity_percentage, threshold =
 
 	return prefix_dict
 
-def find_prefixes(path = "joerg/"):
+def find_prefixes(path = "certs/"):
 	find_list = subprocess.check_output(["find", path, "-type", "f"]).split('\n')
 	word_list = [w for w in find_list if w]
-	print find_buckets(word_list)
+	return find_buckets(word_list)
 
 if __name__ == "__main__":
 	find_prefixes()
