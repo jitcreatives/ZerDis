@@ -9,10 +9,12 @@ from logic.ClientContext import ClientContext
 from logic.KnfAuthorize import KnfAuthorize
 from logic.KnfRule import KnfRule
 from logic.LiteralMatches import LiteralMatches
+from logic.LiteralDNSCheck import LiteralDNSCheck
+from logic.LiteralSystemCall import LiteralSystemCall
 
 HTTPS = False
-SERVER = "http://192.168.12.112"
-PORT = ":8080"
+SERVER = "https://192.168.12.112"
+PORT = ":8443"
 PATH = ""
 
 class CertDistribution(object):
@@ -21,9 +23,14 @@ class CertDistribution(object):
 
 
     def __init__(self):
-    	lit = LiteralMatches(negated = False, key = 'domain', pattern = '[mail]+')
+    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '[tommylap]+')
+    	lit_2 = LiteralDNSCheck(negated = False)
+        lit_3 = LiteralSystemCall(negated = False, pattern = "ssh explicit@$ip exit 0")
     	rule = KnfRule()
-    	rule.add_literal(lit)
+        rule.add_literal(lit_3)
+        #rule.add_literal(lit_1)
+    	#rule.add_literal(lit_2)
+
     	self.knf.add_rule(rule)
 
     @cherrypy.expose
@@ -39,6 +46,8 @@ class CertDistribution(object):
     	'''
     	
     	headers = cherrypy.request.headers
+
+    	print headers
         url = cherrypy.url().replace("%s%s" % (SERVER, PORT),"")
         if url == '/':
         	prefix_dict = find_prefixes()
@@ -54,21 +63,30 @@ class CertDistribution(object):
         	# create client context
         	cc = ClientContext()
         	cc.add_path(url[1:])
-        	if headers["domain"]:
+        	if headers.has_key("domain"):
         		cc.add_domain(headers["domain"])
-        	if headers["Remote-Addr"]:
+        	if headers.has_key("Remote-Addr"):
         		cc.add_ip(headers["Remote-Addr"])
-        	
+			if headers.has_key("Token"):
+				cc.add_ip(headers["Token"])
+
     		authorized = self.knf.authorize(cc)
     		if authorized:
     			return serve_file(os.getcwd() + url, "application/x-download", "attachment")
     		else:
     			cherrypy.response.status = 401
     			return "UNAUTHORIZED"
-        return("Hallo Joerg -> CertDistribution powered by J.I.T.")
+        return "CertDistribution powered by J.I.T.<br />If you see this message something went wrong."
 
 if __name__ == '__main__':
-	cherrypy.server.socket_host = '192.168.12.112'
-	#cherrypy.root = CertDistribution()
-	#cherrypy.server.start()
+	server_config = {
+        'server.socket_host': '192.168.12.112',
+        'server.socket_port':8443,
+
+        'server.ssl_module':'pyopenssl',
+        'server.ssl_certificate':'etc/host.crt',
+        'server.ssl_private_key':'etc/host.key',
+        'server.ssl_certificate_chain':'etc/ca.crt'
+    }
+	cherrypy.config.update(server_config)
 	cherrypy.quickstart(CertDistribution())
