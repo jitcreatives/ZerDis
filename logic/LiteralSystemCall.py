@@ -11,7 +11,7 @@ class LiteralSystemCall( KnfLiteral ):
         self.pattern = pattern
 
     def check( self, context ):
-        syscall = Template( self.pattern ).substitude( context.context_map )
+        syscall = Template( self.pattern ).substitute( context.context_map )
 
         if 0 == subprocess.call( syscall, shell = True ):
             return True
