@@ -39,7 +39,6 @@ class CertDistribution(object):
     	'''
     	
     	headers = cherrypy.request.headers
-    	
         url = cherrypy.url().replace("%s%s" % (SERVER, PORT),"")
         if url == '/':
         	prefix_dict = find_prefixes()
@@ -54,9 +53,12 @@ class CertDistribution(object):
         else:
         	# create client context
         	cc = ClientContext()
-        	cc.context_map = headers
-        	#cc.add_domain(headers["domain"]) 
-
+        	cc.add_path(url[1:])
+        	if headers["domain"]:
+        		cc.add_domain(headers["domain"])
+        	if headers["Remote-Addr"]:
+        		cc.add_ip(headers["Remote-Addr"])
+        	
     		authorized = self.knf.authorize(cc)
     		if authorized:
     			return serve_file(os.getcwd() + url, "application/x-download", "attachment")
