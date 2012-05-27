@@ -10,7 +10,7 @@ class LiteralDNSCheck( KnfLiteral ):
 
         def check( self, context ):
                 ip = socket.gethostbyname( context.context_map[ 'domain' ] )
-                if ip == context.context_map[ 'domain' ]:
+                if ip == context.context_map[ 'ip' ]:
                         return True
                 else:
                         return False
