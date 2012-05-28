@@ -1,0 +1,10 @@
+
+* build configuration parser to achieve readable config files
+* build certificate client tests:
+	* the requested certificate should be in charge for given domain
+	* see ssl.match_hostname
+* test DNSVerify literal
+* push flexibility of similarity function
+* build client lib
+* tidy up project structure (including refactoring structure)
+* use logging system
