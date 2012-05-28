@@ -13,9 +13,17 @@ from logic.LiteralDNSCheck import LiteralDNSCheck
 from logic.LiteralSystemCall import LiteralSystemCall
 
 HTTPS = False
-SERVER = "https://mgmt01.jit-creatives.de"
+SERVER = "https://csr-pc45.zib.de"
+LISTEN = "0.0.0.0"
 PORT = ":4661"
 PATH = "/var/ssl"
+
+CERT = '/home/explicit/data/pim/certs/DFN-Verein_PCA_Grid_G01/cert-host_csr-pc45.pem'
+KEY = '/home/explicit/data/pim/certs/DFN-Verein_PCA_Grid_G01/keys/cert-host_csr-pc45.key'
+CA = '/home/explicit/data/pim/certs/DFN-Verein_PCA_Grid_G01.pem'
+#CERT = '/var/ssl/mgmt01.jit-creatives.de/req.pem.crt',
+#KEY = '/var/ssl/mgmt01.jit-creatives.de/req.pem.key',
+#CA = '/var/ssl/startssl_caincrt'
 
 class CertDistribution(object):
     
@@ -23,13 +31,16 @@ class CertDistribution(object):
 
 
     def __init__(self):
+        if not os.path.exists( PATH ):
+            raise ValueError( PATH + " does not exist" )
+
     	rule = KnfRule()
 
-    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '(.*jit-creatives.de)|(.*jitmail.de)|(.*djangoserver.de)')
+    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '.*')
         rule.add_literal(lit_1)
 
     	lit_2 = LiteralDNSCheck(negated = False)
-    	rule.add_literal(lit_2)
+    	#rule.add_literal(lit_2)
 
         lit_3 = LiteralSystemCall(negated = False, pattern = "ssh root@$ip exit 0")
         #rule.add_literal(lit_3)
@@ -50,22 +61,26 @@ class CertDistribution(object):
     	
     	headers = cherrypy.request.headers
 
-    	print headers
-        url = cherrypy.url().replace("%s%s" % (SERVER, PORT),"")
+        url_no_protocol = cherrypy.url().partition( "://" )[2]
+        url_splited = url_no_protocol.partition( "/" )
+        url = url_splited[1] + url_splited[2]
+
         if url == '/':
-        	prefix_dict = find_prefixes( PATH )
-        	# define output
-		return_str = ""
-		for k in prefix_dict.keys():
-			return_str += "%s\n" % (k)
-		#return str(prefix_dict.keys())
-		return return_str
+            prefix_dict = find_prefixes( PATH )
+            # define output
+            return_str = ""
+            for k in prefix_dict.keys():
+                return_str += "%s\n" % (k)
+        
+            #return str(prefix_dict.keys())
+            return return_str
+
         elif not os.path.exists(PATH + url): 
         	prefix_dict = find_prefixes( PATH )
         	try:
-        		buckets = prefix_dict[url]
+        		bucket = prefix_dict[url]
 			cherrypy.response.status = 202
-        		return str(prefix_dict[url])
+        		return str( bucket )
         	except:
 			cherrypy.response.status = 404
         		return "nothing found for this prefix, sorry dude!"
@@ -90,13 +105,13 @@ class CertDistribution(object):
 
 if __name__ == '__main__':
 	server_config = {
-        'server.socket_host': 'mgmt01.jit-creatives.de',
+        'server.socket_host': LISTEN,
         'server.socket_port':4661,
 
         'server.ssl_module':'pyopenssl',
-        'server.ssl_certificate':'/var/ssl/mgmt01.jit-creatives.de/req.pem.crt',
-        'server.ssl_private_key':'/var/ssl/mgmt01.jit-creatives.de/req.pem.key',
-        'server.ssl_certificate_chain':'/var/ssl/startssl_caincrt'
+        'server.ssl_certificate':CERT,
+        'server.ssl_private_key':KEY,
+        'server.ssl_certificate_chain':CA
     	}
 	cherrypy.config.update(server_config)
 	cherrypy.quickstart(CertDistribution())
