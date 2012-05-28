@@ -23,13 +23,16 @@ class CertDistribution(object):
 
 
     def __init__(self):
-    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '(.*\.jit-creatives.de)|(.*\.jitmail.de)|(.*\.djangoserver.de)')
-    	lit_2 = LiteralDNSCheck(negated = False)
-        #lit_3 = LiteralSystemCall(negated = False, pattern = "ssh root@$ip exit 0")
     	rule = KnfRule()
-        #rule.add_literal(lit_3)
+
+    	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '(.*jit-creatives.de)|(.*jitmail.de)|(.*djangoserver.de)')
         rule.add_literal(lit_1)
+
+    	lit_2 = LiteralDNSCheck(negated = False)
     	rule.add_literal(lit_2)
+
+        lit_3 = LiteralSystemCall(negated = False, pattern = "ssh root@$ip exit 0")
+        #rule.add_literal(lit_3)
 
     	self.knf.add_rule(rule)
 
@@ -50,14 +53,21 @@ class CertDistribution(object):
     	print headers
         url = cherrypy.url().replace("%s%s" % (SERVER, PORT),"")
         if url == '/':
-        	prefix_dict = find_prefixes()
-        	return str(prefix_dict.keys())
+        	prefix_dict = find_prefixes( PATH )
+        	# define output
+		return_str = ""
+		for k in prefix_dict.keys():
+			return_str += "%s\n" % (k)
+		#return str(prefix_dict.keys())
+		return return_str
         elif not os.path.exists(PATH + url): 
-        	prefix_dict = find_prefixes()
+        	prefix_dict = find_prefixes( PATH )
         	try:
-        		buckets = prefix_dict[url[1:]]
-        		return str(prefix_dict[url[1:]])
+        		buckets = prefix_dict[url]
+			cherrypy.response.status = 202
+        		return str(prefix_dict[url])
         	except:
+			cherrypy.response.status = 404
         		return "nothing found for this prefix, sorry dude!"
         else:
         	# create client context
