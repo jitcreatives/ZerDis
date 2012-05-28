@@ -30,33 +30,46 @@ class CertDistribution(object):
     	
     	headers = cherrypy.request.headers
 
+        # get path
         url_no_protocol = cherrypy.url().partition( "://" )[2]
         url_splited = url_no_protocol.partition( "/" )
         url = url_splited[1] + url_splited[2]
 
+        # phase 1: get all prefixes
         if url == '/':
             prefix_dict = find_prefixes( PATH )
-            # define output
+
+            # define output: one result per line
             return_str = ""
             for k in prefix_dict.keys():
                 return_str += "%s\n" % (k)
         
-            #return str(prefix_dict.keys())
             return return_str
 
+        # phase 2: get all files by a prefix
         elif not os.path.exists(PATH + url): 
-        	prefix_dict = find_prefixes( PATH )
-        	try:
-        		bucket = prefix_dict[url]
-			cherrypy.response.status = 202
-        		return str( bucket )
-        	except:
-			cherrypy.response.status = 404
-        		return "nothing found for this prefix, sorry dude!"
+            prefix_dict = find_prefixes( PATH )
+
+            try:
+                bucket = prefix_dict[url]
+                cherrypy.response.status = 202
+
+                # define output: one result per line
+                return_str = ""
+                for k in bucket:
+                    return_str += "%s\n" % (k)
+            
+                return return_str
+            except:
+                cherrypy.response.status = 404
+                return "nothing found for this prefix, sorry dude!"
+
+        # phase 3: get file
         else:
         	# create client context
         	cc = ClientContext()
-        	cc.add_path(url[1:])
+        	cc.add_path( url )
+
         	if headers.has_key("domain"):
         		cc.add_domain(headers["domain"])
         	if headers.has_key("Remote-Addr"):
@@ -64,12 +77,16 @@ class CertDistribution(object):
 			if headers.has_key("Token"):
 				cc.add_ip(headers["Token"])
 
-    		authorized = self.knf.authorize(cc)
+            # check authorization by knf
+    		authorized = knf.authorize(cc)
+
+            # serve file if authorized
     		if authorized:
     			return serve_file(PATH + url, "application/x-download", "attachment")
     		else:
     			cherrypy.response.status = 401
     			return "UNAUTHORIZED"
+
         return "CertDistribution powered by J.I.T.<br />If you see this message something went wrong."
 
 if __name__ == '__main__':
