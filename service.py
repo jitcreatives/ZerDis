@@ -8,12 +8,12 @@ from logic.find_prefix import find_prefixes
 from logic.ClientContext import ClientContext
 from logic.KnfAuthorize import KnfAuthorize
 from logic.KnfRule import KnfRule
+from logic.LiteralAllow import LiteralAllow
 from logic.LiteralMatches import LiteralMatches
 from logic.LiteralDNSCheck import LiteralDNSCheck
 from logic.LiteralSystemCall import LiteralSystemCall
 
 HTTPS = False
-SERVER = "https://csr-pc45.zib.de"
 LISTEN = "0.0.0.0"
 PORT = ":4661"
 PATH = "/var/ssl"
@@ -36,8 +36,11 @@ class CertDistribution(object):
 
     	rule = KnfRule()
 
+    	lit_0 = LiteralAllow( negated = False )
+        rule.add_literal(lit_0)
+
     	lit_1 = LiteralMatches(negated = False, key = 'domain', pattern = '.*')
-        rule.add_literal(lit_1)
+        #rule.add_literal(lit_1)
 
     	lit_2 = LiteralDNSCheck(negated = False)
     	#rule.add_literal(lit_2)
