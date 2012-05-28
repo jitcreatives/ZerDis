@@ -16,7 +16,11 @@ def get_similarity_percentage(a, b):
 	prefix = os.path.commonprefix([a, b])
 
 	# return ratio
-	return float(len(prefix)) / max(len_a, len_b) 
+	sim = float(len(prefix)) / max(len_a, len_b) 
+
+	#print a + " ~ " + b + " == " + str(sim)
+
+	return sim
 
 def get_similarity_prefix(a, b):
 	'''
@@ -34,11 +38,20 @@ def get_similarity_suffix(a, b):
 	return len_common_prefix - max(len(a), len(b))	
 
 
-def find_buckets(words, similarity_func = get_similarity_percentage, threshold = 0.8):
+def find_buckets(words, similarity_func = get_similarity_percentage, threshold = 0.5):
 
 	similarities = []
 	for i in range(len(words)-1):
-		similarities.append(similarity_func(words[i], words[i+1]))
+		index_a = words[i].rfind("/") + 1
+		index_b = words[i+1].rfind("/") + 1
+		path_a = words[i][:index_a]
+		name_a = words[i][index_a:]
+		path_b = words[i+1][:index_b]
+		name_b = words[i+1][index_b:]
+		if path_a == path_b:
+			similarities.append( similarity_func( name_a, name_b ) )
+		else:
+			similarities.append( 0 )
 		
 	buckets = [] 
 	act_buckets = []
@@ -70,8 +83,12 @@ def want_file( w ):
 	return True
 
 def find_prefixes(path = "/var/ssl"):
-	find_list = subprocess.Popen(['find', path ,"-type","f"], stdout=subprocess.PIPE).communicate()[0].split('\n')
+	find_list = sorted( subprocess.\
+		Popen(['find', path ,"-type","f"], stdout=subprocess.PIPE).\
+		communicate()[0].\
+		split('\n')\
+	)
 	#find_list = subprocess.check_output(["find", path, "-type", "f"]).split('\n')
-	word_list = [ w.replace("/var/ssl/","") for w in find_list if want_file( w )]
+	word_list = [ w.replace(path,"") for w in find_list if want_file( w )]
 	return find_buckets(word_list)
 
