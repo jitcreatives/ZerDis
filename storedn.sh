@@ -33,5 +33,7 @@ X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-store \
     &>/dev/null \
 || exit 1
 
+rm "${ENCKEY}"
+
 echo "\"${CERDIS_CERTDIR}/${CERT}\" ${CERDIS_CERTDIR}/${KEY}"
 
