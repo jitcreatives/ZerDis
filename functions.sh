@@ -201,3 +201,25 @@ certificate_valid() {
         test $((${ENDTIME} - ${NOW})) -ge 0
 }
 
+################################################################################
+# misc utils
+
+function info() {
+    if [ -n INFO -o -n DEBUG -o -n TRACE ]; then
+        echo INFO: "$@"
+    fi
+}
+
+
+function debug() {
+    if [ -n DEBUG -o -n TRACE ]; then
+        echo DEBUG: "$@"
+    fi
+}
+
+
+function trace() {
+    if [ -n TRACE ]; then
+        echo TRACE: "$@"
+    fi
+}
