@@ -30,8 +30,8 @@ function cerdic_init() {
         PASS="$(pwgen 12 | head -n1)"
 
         # let each certificate be stored by generated token
-        trace "Calling: ssh '${CERDIS_USER}@${CERDIS_HOST}' storedn.sh '${USER}' '${PASS}' '${DN}'"
-        PAIR="$(ssh "${CERDIS_USER}@${CERDIS_HOST}" storedn.sh "${USER}" "${PASS}" "${DN}")"
+        trace "Calling: ssh '${CERDIS_USER}@${CERDIS_HOST}' \"storedn.sh '${USER}' '${PASS}' '${DN}'\""
+        PAIR="$(ssh "${CERDIS_USER}@${CERDIS_HOST}" "storedn.sh '${USER}' '${PASS}' '${DN}'")"
         REMOTECERTPATH="$(echo "${PAIR}" | getkeys)"
         REMOTEKEYPATH="$(getvalue "${PAIR}")"
         debug "Remote path for certificate: ${REMOTECERTPATH}"
