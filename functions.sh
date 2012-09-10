@@ -164,7 +164,7 @@ function getkeybycert() {
 function encryptkey() {
     KEY="$1"
     PASSPHRASE="$2"
-    UUID=$(uuidgen)
+    UUID=$(uuid)
     KEYOUT="/tmp/cerdis.${UUID}.enc.key"
 
     openssl rsa -des3 -in "${KEY}" -passout pass:"${PASSPHRASE}" -out "${KEYOUT}" &>/dev/null && \
