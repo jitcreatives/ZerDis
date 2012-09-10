@@ -23,6 +23,8 @@ function cerdic_init() {
     ssh "${CERDIS_USER}@${CERDIS_HOST}" getdnbyfqdn.sh "${FQDN}" | \
     while read DN; do
 
+        trace "Initialization for DN: '${DN}'"
+
         # generate user and password
         USER="${FQDN}.$(echo "${DN}" | md5sum | cut -d' ' -f1)"
         PASS="$(pwgen 12 | head -n1)"
@@ -31,12 +33,14 @@ function cerdic_init() {
         PAIR="$(ssh "${CERDIS_USER}@${CERDIS_HOST}" storedn.sh "${USER}" "${PASS}" "${DN}")"
         REMOTECERTPATH="$(echo "${PAIR}" | getkeys)"
         REMOTEKEYPATH="$(getvalue "${PAIR}")"
+        debug "Remote path for certificate: ${REMOTECERTPATH}"
 
         # get CN of DN
         CN="$(getcnofdn "${DN}")"
 
         CERT="${CERDIC_CREDENTIALS_PATH}/${CN}.crt"
         KEY="${CERDIC_CREDENTIALS_PATH}/${CN}.key"
+        trace "Local path for certificate: ${CERT}"
 
         scp "${CERDIS_USER}@${CERDIS_HOST}:${REMOTECERTPATH}" "${CERT}"
         scp "${CERDIS_USER}@${CERDIS_HOST}:${REMOTEKEYPATH}" "${KEY}"
