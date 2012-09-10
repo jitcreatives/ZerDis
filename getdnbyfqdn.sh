@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source cerdis.conf
-source functions.sh
+source /etc/cerdis/cerdis.conf
+source /etc/cerdis/functions.sh
 
 
 function usage() {
@@ -14,5 +14,5 @@ if [ -z "$1" ]; then
 fi
 FQDN="$1"
 
-getvalues "${CERDIS_FQDN_DN_MAP_PATH}" "${FQDN}"
+getvalues ${FQDN} "${CERDIS_FQDN_DN_MAP_PATH}"
 
