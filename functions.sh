@@ -13,7 +13,7 @@ function getpairs() {
     MAPFILE="${2:--}"
 
     # grep all key value pairs matching KEY
-    grep -E "^\"${KEY}\"" "${MAPFILE}" | \
+    grep -F "\"${KEY}\"" "${MAPFILE}" | \
     while read PAIR; do
         echo "${PAIR:${#KEY}+2}" | {
             read VALUE
@@ -46,7 +46,7 @@ function getvalues() {
     MAPFILE="${2:--}"
 
     # grep all key value pairs matching KEY
-    grep -E "^\"${KEY}\"" "${MAPFILE}" | \
+    grep -F "\"${KEY}\"" "${MAPFILE}" | \
     while read PAIR; do
         echo "${PAIR:${#KEY}+2}" | {
             read VALUE;
