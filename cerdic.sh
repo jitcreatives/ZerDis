@@ -32,6 +32,11 @@ function cerdic_init() {
         # let each certificate be stored by generated token
         trace "Calling: ssh '${CERDIS_USER}@${CERDIS_HOST}' \"storedn.sh '${USER}' '${PASS}' '${DN}'\""
         PAIR="$(ssh "${CERDIS_USER}@${CERDIS_HOST}" "storedn.sh '${USER}' '${PASS}' '${DN}'")"
+        if [ -z "${PAIR}" ]; then
+#                info "Could not find credentials for '${DN}' on remote host"
+                exit 2
+        fi
+
         REMOTECERTPATH="$(echo "${PAIR}" | getkeys)"
         REMOTEKEYPATH="$(getvalue "${PAIR}")"
         debug "Remote path for certificate: ${REMOTECERTPATH}"
