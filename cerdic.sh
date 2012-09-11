@@ -67,9 +67,12 @@ function cerdic_update() {
     while read DN; do
 
         # get user and password
+        debug "Update for DN: '${DN}'"
+
         PAIR="$(getvalues "${DN}" "${CERDIC_DN_TOKEN_MAP}")"
         USER="$(echo "${PAIR}" | getkeys)"
         PASS="$(getvalue "${PAIR}")"
+        trace "User: '${USER}' '${PASS}'"
 
         # get CN of DN
         CN="$(getcnofdn "${DN}")"
@@ -77,9 +80,17 @@ function cerdic_update() {
         CERT="${CERDIC_CREDENTIALS_PATH}/${CN}.crt"
         KEY="${CERDIC_CREDENTIALS_PATH}/${CN}.key"
 
+        if [ ! -e "${CERT}" -o ! -e "${KEY}" ]; then
+                warn "Could not update Certificate, since there is no old version."
+                continue
+        fi
+
         if certificate_valid "${CERT}" "${PERIOD}"; then
+            debug "Certificate still valid"
             continue
         fi
+
+        debug "Updating certificate..."
 
         # retrieve stored certificate
         echo "${PASS}" | X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-retrieve \
