@@ -206,34 +206,59 @@ certificate_valid() {
 
 function error() {
     if [ -n ERROR -o -n WARN -o -n INFO -o -n DEBUG -o -n TRACE ]; then
-        echo ERROR: "$@" >&2
+        if [ 0 -eq $# ]; then
+            echo -n "ERROR: " >&2
+            cat - >&2
+        else
+            echo "ERROR: $@" >&2
+        fi
     fi
 }
 
 
 function warn() {
     if [ -n WARN -o -n INFO -o -n DEBUG -o -n TRACE ]; then
-        echo WARN: "$@" >&2
+        if [ 0 -eq $# ]; then
+            echo -n "WARN: " >&2
+            cat - >&2
+        else
+            echo "WARN: $@" >&2
+        fi
     fi
 }
 
 
 function info() {
     if [ -n INFO -o -n DEBUG -o -n TRACE ]; then
-        echo INFO: "$@" >&2
+        if [ 0 -eq $# ]; then
+            echo -n "INFO: " >&2
+            cat - >&2
+        else
+            echo "INFO: $@" >&2
+        fi
     fi
 }
 
 
 function debug() {
     if [ -n DEBUG -o -n TRACE ]; then
-        echo DEBUG: "$@" >&2
+        if [ 0 -eq $# ]; then
+            echo -n "DEBUG: " >&2
+            cat - >&2
+        else
+            echo "DEBUG: $@" >&2
+        fi
     fi
 }
 
 
 function trace() {
     if [ -n TRACE ]; then
-        echo TRACE: "$@" >&2
+        if [ 0 -eq $# ]; then
+            echo -n "TRACE: " >&2
+            cat - >&2
+        else
+            echo "TRACE: $@" >&2
+        fi
     fi
 }
