@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source cerdic.conf
-source functions.sh
+source /etc/cerdis/cerdic.conf
+source /etc/cerdis/functions.sh
 
 
 function usage() {
