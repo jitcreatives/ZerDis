@@ -32,6 +32,7 @@ if [ -z "${ENCKEY}" ]; then
     error Could not encrypt private key "'${KEY}'"
     exit 3
 fi
+trace "Encrypted key: ${ENCKEY}"
 
 X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-store \
     --pshost "${MYPROXY_SERVER:=localhost}" \
