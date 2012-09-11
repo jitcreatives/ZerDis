@@ -133,7 +133,7 @@ function findcertbydn() {
     while read CERT; do
         # filter all certificates with matching dn
         openssl x509 -noout -subject -in "${CERT}" 2>/dev/null | \
-        grep -E "^subject=[[:space:]]*${DN}$" &>/dev/null
+        grep -F "${DN}$" &>/dev/null
 
         if [ $? -eq 0 ]; then
             # get longest applicable certificate
@@ -204,22 +204,36 @@ certificate_valid() {
 ################################################################################
 # misc utils
 
+function error() {
+    if [ -n ERROR -o -n WARN -o -n INFO -o -n DEBUG -o -n TRACE ]; then
+        echo ERROR: "$@" >&2
+    fi
+}
+
+
+function warn() {
+    if [ -n WARN -o -n INFO -o -n DEBUG -o -n TRACE ]; then
+        echo WARN: "$@" >&2
+    fi
+}
+
+
 function info() {
     if [ -n INFO -o -n DEBUG -o -n TRACE ]; then
-        echo INFO: "$@"
+        echo INFO: "$@" >&2
     fi
 }
 
 
 function debug() {
     if [ -n DEBUG -o -n TRACE ]; then
-        echo DEBUG: "$@"
+        echo DEBUG: "$@" >&2
     fi
 }
 
 
 function trace() {
     if [ -n TRACE ]; then
-        echo TRACE: "$@"
+        echo TRACE: "$@" >&2
     fi
 }
