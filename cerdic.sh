@@ -92,6 +92,9 @@ function cerdic_update() {
         KEY="${CERDIC_CREDENTIALS_PATH}/${CN}.key"
         trace "Updating '${CERT}' and '${KEY}'"
 
+        TMPCERT="/tmp/cerdis.$(uuid).crt"
+        TMPKEY="/tmp/cerdis.$(uuid).key"
+
         if [ ! -e "${CERT}" -o ! -e "${KEY}" ]; then
                 warn "Could not update Certificate, since there is no old version."
                 continue
@@ -105,18 +108,23 @@ function cerdic_update() {
         debug "Updating certificate..."
 
         # retrieve stored certificate
-        trace "Calling: X509_USER_CERT=\"${CERT}\" X509_USER_KEY=\"${KEY}\" myproxy-retrieve \
-            --pshost \"${MYPROXY_SERVER:=localhost}\" \
+        trace "Calling: MYPROXY_SERVER_DN=\"${CERDIS_SERVER_DN}\" X509_USER_CERT=\"${CERT}\" X509_USER_KEY=\"${KEY}\" X509_CERT_DIR=\"/etc/ssl/certs\" myproxy-retrieve \
+            --pshost \"${MYPROXY_SERVER:=${CERDIS_HOST}}\" \
             --psport \"${MYPROXY_PORT:=7512}\" \
             --certfile \"${CERT}\" \
-            --keyfile \"${ENCKEY}\" \
-            --username \"${USER}\""
-        echo "${PASS}" | X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-retrieve \
+            --keyfile \"${KEY}\" \
+            --username \"${USER}\" \
+            --stdin_pass"
+        echo "${PASS}" | MYPROXY_SERVER_DN="${CERDIS_SERVER_DN}" X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" X509_CERT_DIR="/etc/ssl/certs" myproxy-retrieve \
             --pshost "${MYPROXY_SERVER:=localhost}" \
             --psport "${MYPROXY_PORT:=7512}" \
-            --certfile "${CERT}" \
-            --keyfile "${ENCKEY}" \
-            --username "${USER}"
+            --certfile "${TMPCERT}" \
+            --keyfile "${TMPKEY}" \
+            --username "${USER}" \
+            --stdin_pass
+
+        mv "${TMPCERT}" "${CERT}"
+        mv "${TMPKEY}" "${KEY}"
 
         if certificate_valid "${CERT}" "${PERIOD}"; then
             continue
