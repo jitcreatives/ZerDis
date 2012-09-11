@@ -205,7 +205,7 @@ certificate_valid() {
 # misc utils
 
 function error() {
-    if [ -n ERROR -o -n WARN -o -n INFO -o -n DEBUG -o -n TRACE ]; then
+    if [ -n "${ERROR}" -o -n "${WARN}" -o -n "${INFO}" -o -n "${DEBUG}" -o -n "${TRACE}" ]; then
         if [ 0 -eq $# ]; then
             echo -n "ERROR: " >&2
             cat - >&2
@@ -217,7 +217,7 @@ function error() {
 
 
 function warn() {
-    if [ -n WARN -o -n INFO -o -n DEBUG -o -n TRACE ]; then
+    if [ -n "${WARN}" -o -n "${INFO}" -o -n "${DEBUG}" -o -n "${TRACE}" ]; then
         if [ 0 -eq $# ]; then
             echo -n "WARN: " >&2
             cat - >&2
@@ -229,7 +229,7 @@ function warn() {
 
 
 function info() {
-    if [ -n INFO -o -n DEBUG -o -n TRACE ]; then
+    if [ -n "${INFO}" -o -n "${DEBUG}" -o -n "${TRACE}" ]; then
         if [ 0 -eq $# ]; then
             echo -n "INFO: " >&2
             cat - >&2
@@ -241,7 +241,7 @@ function info() {
 
 
 function debug() {
-    if [ -n DEBUG -o -n TRACE ]; then
+    if [ -n "${DEBUG}" -o -n "${TRACE}" ]; then
         if [ 0 -eq $# ]; then
             echo -n "DEBUG: " >&2
             cat - >&2
@@ -253,7 +253,7 @@ function debug() {
 
 
 function trace() {
-    if [ -n TRACE ]; then
+    if [ -n "${TRACE}" ]; then
         if [ 0 -eq $# ]; then
             echo -n "TRACE: " >&2
             cat - >&2
