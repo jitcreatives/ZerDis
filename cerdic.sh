@@ -63,7 +63,7 @@ function cerdic_init() {
         scp "${CERDIS_USER}@${CERDIS_HOST}:${REMOTEKEYPATH}" "${KEY}"
 
         # store token
-        multimap_put "${DN}" "${USER} ${PASS}" "${CERDIC_DN_TOKEN_MAP}"
+        multimap_put "${DN}" "\"${USER}\" ${PASS}" "${CERDIC_DN_TOKEN_MAP}"
     done
 }
 
