@@ -177,8 +177,8 @@ function encryptkey() {
 # \return Prints the cn.
 function getcnofdn() {
     DN="$1"
-    CN="${DN##.*CN=}"
-    CN="${CN%%/.*}"
+    CN="${DN##*CN=}"
+    CN="${CN%%/*}"
 
     echo "${CN}"
 }
