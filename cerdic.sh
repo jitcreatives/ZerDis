@@ -106,9 +106,12 @@ function cerdic_update() {
 
         # send mail to admin if there has not been a new certificate
         ENDDATE=$(openssl x509 -in "${CERT}" -noout -enddate | cut -d'=' -f2)
+        ISSUER=$(openssl x509 -in "${CERT}" -noout -issuer | cut -d'=' -f2)
+        {
+            echo "Certificate '${DN}' signed by '${ISSUER}' on '${FQDN}' will expire on ${ENDDATE}."
+        } | \
         mail -s "Certificate expires!" \
-                "${ADMINEMAIL}" \
-                "Certificate '${DN}' on '${FQDN}' will expire on ${ENDDATE}."
+                "${ADMINEMAIL}"
     done
 }
 
