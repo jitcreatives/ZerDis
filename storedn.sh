@@ -36,13 +36,13 @@ if [ -z "${ENCKEY}" ]; then
 fi
 trace "Encrypted key: ${ENCKEY}"
 
-X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-store \
+X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" X509_CERT_DIR="${CERDIS_CERTDIR}" myproxy-store \
     --pshost "${MYPROXY_SERVER:=localhost}" \
     --psport "${MYPROXY_PORT:=7512}" \
     --certfile "${CERT}" \
     --keyfile "${ENCKEY}" \
     --username "${USER}" \
-    &>/dev/null \
+    | debug \
 || exit 1
 
 rm "${ENCKEY}"
