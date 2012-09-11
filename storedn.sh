@@ -36,6 +36,13 @@ if [ -z "${ENCKEY}" ]; then
 fi
 trace "Encrypted key: ${ENCKEY}"
 
+trace "Calling:  MYPROXY_SERVER_DN=\"${CERDIS_SERVER_DN}\" X509_USER_CERT=\"${CERT}\" X509_USER_KEY=\"${KEY}\" X509_CERT_DIR=\"/etc/ssl/certs\" myproxy-store \
+    --pshost \"${MYPROXY_SERVER:=localhost}\" \
+    --psport \"${MYPROXY_PORT:=7512}\" \
+    --certfile \"${CERT}\" \
+    --keyfile \"${ENCKEY}\" \
+    --username \"${USER}\""
+
 MYPROXY_SERVER_DN="${CERDIS_SERVER_DN}" X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" X509_CERT_DIR="/etc/ssl/certs" myproxy-store \
     --pshost "${MYPROXY_SERVER:=localhost}" \
     --psport "${MYPROXY_PORT:=7512}" \
