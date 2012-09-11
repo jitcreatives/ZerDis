@@ -18,10 +18,19 @@ DN="$3"
 
 CERT="$(findcertbydn "${CERDIS_CERTDIR}" "${DN}")"
 KEY="$(getkeybycert "${CERT}")"
+
+if [ -z "${CERT}" ]; then
+    warn "No certificate stored for dn '${DN}'"
+	exit 2
+fi
+
+debug "Store certificate: ${CERT}"
+debug "Store key: ${KEY}"
+
 ENCKEY="$(encryptkey "${KEY}" "${PASS}")"
 if [ -z "${ENCKEY}" ]; then
-    echo Could not encrypt private key "'${KEY}'"
-    exit 2
+    error Could not encrypt private key "'${KEY}'"
+    exit 3
 fi
 
 X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-store \
