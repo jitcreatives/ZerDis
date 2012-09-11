@@ -133,7 +133,7 @@ function findcertbydn() {
     while read CERT; do
         # filter all certificates with matching dn
         openssl x509 -noout -subject -in "${CERT}" 2>/dev/null | \
-        grep -F "${DN}$" &>/dev/null
+        grep -F "${DN}" &>/dev/null
 
         if [ $? -eq 0 ]; then
             # get longest applicable certificate
