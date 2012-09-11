@@ -20,6 +20,11 @@ shift
 
 function cerdic_init() {
     # Get all dns and...
+    TRACE="${TRACE}" \
+    DEBUG="${DEBUG}" \
+    INFO="${INFO}" \
+    WARN="${WARN}" \
+    ERROR="${ERROR}" \
     ssh "${CERDIS_USER}@${CERDIS_HOST}" getdnbyfqdn.sh "${FQDN}" | \
     while read DN; do
 
@@ -31,7 +36,13 @@ function cerdic_init() {
 
         # let each certificate be stored by generated token
         trace "Calling: ssh '${CERDIS_USER}@${CERDIS_HOST}' \"storedn.sh '${USER}' '${PASS}' '${DN}'\""
-        PAIR="$(ssh "${CERDIS_USER}@${CERDIS_HOST}" "storedn.sh '${USER}' '${PASS}' '${DN}'")"
+        PAIR="$( \
+            TRACE="${TRACE}" \
+            DEBUG="${DEBUG}" \
+            INFO="${INFO}" \
+            WARN="${WARN}" \
+            ERROR="${ERROR}" \
+            ssh "${CERDIS_USER}@${CERDIS_HOST}" "storedn.sh '${USER}' '${PASS}' '${DN}'")"
         if [ -z "${PAIR}" ]; then
 #                info "Could not find credentials for '${DN}' on remote host"
                 exit 2
