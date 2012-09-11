@@ -90,6 +90,7 @@ function cerdic_update() {
 
         CERT="${CERDIC_CREDENTIALS_PATH}/${CN}.crt"
         KEY="${CERDIC_CREDENTIALS_PATH}/${CN}.key"
+        trace "Updating '${CERT}' and '${KEY}'"
 
         if [ ! -e "${CERT}" -o ! -e "${KEY}" ]; then
                 warn "Could not update Certificate, since there is no old version."
@@ -104,6 +105,12 @@ function cerdic_update() {
         debug "Updating certificate..."
 
         # retrieve stored certificate
+        trace "Calling: X509_USER_CERT=\"${CERT}\" X509_USER_KEY=\"${KEY}\" myproxy-retrieve \
+            --pshost \"${MYPROXY_SERVER:=localhost}\" \
+            --psport \"${MYPROXY_PORT:=7512}\" \
+            --certfile \"${CERT}\" \
+            --keyfile \"${ENCKEY}\" \
+            --username \"${USER}\""
         echo "${PASS}" | X509_USER_CERT="${CERT}" X509_USER_KEY="${KEY}" myproxy-retrieve \
             --pshost "${MYPROXY_SERVER:=localhost}" \
             --psport "${MYPROXY_PORT:=7512}" \
