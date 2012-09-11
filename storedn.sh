@@ -16,6 +16,8 @@ USER="$1"
 PASS="$2"
 DN="$3"
 
+trace "Called: $0 '$1' '$2' '$3'"
+
 CERT="$(findcertbydn "${CERDIS_CERTDIR}" "${DN}")"
 KEY="$(getkeybycert "${CERT}")"
 
